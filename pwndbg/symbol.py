@@ -118,6 +118,7 @@ def get(address, gdb_only=False):
         if exe:
             exe_map = pwndbg.vmmap.find(exe.address)
             if exe_map and address in exe_map:
+                res = None
                 if pwndbg.ida.available():
                     res =  pwndbg.ida.Name(address) or pwndbg.ida.GetFuncOffset(address)
                 if pwndbg.hopper.available():

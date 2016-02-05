@@ -88,6 +88,7 @@ def nearpc(pc=None, lines=None, to_string=False):
         asm    = pwndbg.disasm.color.instruction(i)
         prefix = ' =>' if i.address == pc else '   '
 
+        pre = None
         if pwndbg.ida.available():
             pre = pwndbg.ida.Anterior(i.address)
         if pwndbg.hopper.available():
