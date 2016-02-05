@@ -10,6 +10,7 @@ import gdb
 import pwndbg.arch
 import pwndbg.disasm.arch
 import pwndbg.ida
+import pwndbg.hopper
 import pwndbg.memory
 import pwndbg.symbol
 import pwndbg.memoize

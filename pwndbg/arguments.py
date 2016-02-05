@@ -12,6 +12,7 @@ import pwndbg.disasm
 import pwndbg.functions
 import pwndbg.funcparser
 import pwndbg.ida
+import pwndbg.hopper
 import pwndbg.memory
 import pwndbg.regs
 import pwndbg.symbol
@@ -121,7 +122,10 @@ def get(instruction):
 
     # Try to grab the data out of IDA
     if not func and target:
-        typename = pwndbg.ida.GetType(target)
+        if pwndbg.ida.available():
+            typename = pwndbg.ida.GetType(target)
+        if pwndbg.hopper.available():
+            typename = pwndbg.hopper.GetType(target)
 
         if typename:
             typename += ';'

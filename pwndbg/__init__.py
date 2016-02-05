@@ -36,6 +36,7 @@ import pwndbg.commands.procinfo
 import pwndbg.commands.auxv
 import pwndbg.commands.windbg
 import pwndbg.commands.ida
+import pwndbg.commands.hopper
 import pwndbg.commands.reload
 import pwndbg.commands.rop
 import pwndbg.commands.shell

@@ -11,6 +11,7 @@ import pwndbg.disasm
 import pwndbg.disasm.color
 import pwndbg.functions
 import pwndbg.ida
+import pwndbg.hopper
 import pwndbg.regs
 import pwndbg.strings
 import pwndbg.symbol
@@ -87,7 +88,10 @@ def nearpc(pc=None, lines=None, to_string=False):
         asm    = pwndbg.disasm.color.instruction(i)
         prefix = ' =>' if i.address == pc else '   '
 
-        pre = pwndbg.ida.Anterior(i.address)
+        if pwndbg.ida.available():
+            pre = pwndbg.ida.Anterior(i.address)
+        if pwndbg.hopper.available():
+            pre = pwndbg.hopper.Anterior(i.address)
         if pre:
             result.append(pwndbg.color.bold(pre))
 

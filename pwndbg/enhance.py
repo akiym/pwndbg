@@ -87,6 +87,8 @@ def enhance(value, code = True):
     # If IDA doesn't think it's in a function, don't display it as code.
     if pwndbg.ida.available() and not pwndbg.ida.GetFunctionName(value):
         rwx = exe = False
+    if pwndbg.hopper.available() and not pwndbg.hopper.GetFunctionName(value):
+        rwx = exe = False
 
     if exe:
         instr = pwndbg.disasm.one(value)
