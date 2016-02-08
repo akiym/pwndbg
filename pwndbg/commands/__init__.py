@@ -39,7 +39,7 @@ class _Command(gdb.Command):
         argv = self.split_args(argument)
         try:
             return self.function(*argv)
-        except TypeError:
+        except:
             if debug:
                 print(traceback.format_exc())
             raise
