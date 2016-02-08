@@ -122,6 +122,7 @@ def get(instruction):
 
     # Try to grab the data out of IDA
     if not func and target:
+        typename = None
         if pwndbg.ida.available():
             typename = pwndbg.ida.GetType(target)
         if pwndbg.hopper.available():
