@@ -101,24 +101,20 @@ def get(address, instructions=1):
 
     return retval
 
-def near(address, instructions=1):
-    current = one(address)
-
-    if not current:
-        return []
-
+def near_anterior(current, instructions=1):
     # Try to go backward by seeing which instructions we've returned
     # before, which were followed by this one.
-    needle = address
     insns  = []
     insn   = one(backward_cache[current.address])
     while insn and len(insns) < instructions:
         insns.append(insn)
         insn = one(backward_cache[insn.address])
     insns.reverse()
-    insns.append(current)
+    return insns
 
+def near_posterior(current, instructions=1):
     # Now find all of the instructions moving forward.
+    insns = []
     insn  = current
     while insn and len(insns) < 1+(2*instructions):
         # In order to avoid annoying cycles where the current instruction
@@ -128,5 +124,16 @@ def near(address, instructions=1):
         insn = one(insn.next)
         if insn:
             insns.append(insn)
+    return insns
 
+def near(address, instructions=1):
+    current = one(address)
+
+    if not current:
+        return []
+
+    insns = []
+    insns.extend(near_anterior(current, instructions))
+    insns.append(current)
+    insns.extend(near_posterior(current, instructions))
     return insns
