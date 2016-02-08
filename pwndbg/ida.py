@@ -26,16 +26,15 @@ try:
 except:
     import xmlrpclib
 
+enabled = False
 
 xmlrpclib.Marshaller.dispatch[int] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
+xmlrpclib.Marshaller.dispatch[type(0)] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
 
 if pwndbg.compat.python2:
     xmlrpclib.Marshaller.dispatch[long] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
 
-
 _ida = None
-
-xmlrpclib.Marshaller.dispatch[type(0)] = lambda _, v, w: w("<value><i8>%d</i8></value>" % v)
 
 def setPort(port):
     global _ida
@@ -54,10 +53,11 @@ class withIDA(object):
     def __call__(self, *args, **kwargs):
         # import pdb
         # pdb.set_trace()
-        if _ida is None:
-            setPort(8888)
-        if _ida is not None:
-            return self.fn(*args, **kwargs)
+        if enabled:
+            if _ida is None:
+                setPort(8888)
+            if _ida is not None:
+                return self.fn(*args, **kwargs)
         return None
 
 def takes_address(function):
@@ -74,7 +74,7 @@ def returns_address(function):
 
 @withIDA
 def available():
-    return True
+    return enabled
 
 def l2r(addr):
     result = (addr - int(pwndbg.elf.exe().address) + base()) & pwndbg.arch.ptrmask

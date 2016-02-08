@@ -26,16 +26,15 @@ try:
 except:
     import xmlrpclib
 
+enabled = False
 
 xmlrpclib.Marshaller.dispatch[int] = lambda _, v, w: w("<value><int>%d</int></value>" % v)
+xmlrpclib.Marshaller.dispatch[type(0)] = lambda _, v, w: w("<value><int>%d</int></value>" % v)
 
 if pwndbg.compat.python2:
     xmlrpclib.Marshaller.dispatch[long] = lambda _, v, w: w("<value><int>%d</int></value>" % v)
 
-
 _hopper = None
-
-xmlrpclib.Marshaller.dispatch[type(0)] = lambda _, v, w: w("<value><int>%d</int></value>" % v)
 
 def setPort(port):
     global _hopper
@@ -54,10 +53,11 @@ class withHopper(object):
     def __call__(self, *args, **kwargs):
         # import pdb
         # pdb.set_trace()
-        if _hopper is None:
-            setPort(8889)
-        if _hopper is not None:
-            return self.fn(*args, **kwargs)
+        if enabled:
+            if _hopper is None:
+                setPort(8889)
+            if _hopper is not None:
+                return self.fn(*args, **kwargs)
         return None
 
 def takes_address(function):
@@ -74,7 +74,7 @@ def returns_address(function):
 
 @withHopper
 def available():
-    return True
+    return enabled
 
 def l2r(addr):
     result = (addr - int(pwndbg.elf.exe().address) + base()) & pwndbg.arch.ptrmask
