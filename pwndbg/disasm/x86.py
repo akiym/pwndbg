@@ -67,7 +67,7 @@ class DisassemblyAssistant(pwndbg.disasm.arch.DisassemblyAssistant):
         base    = op.value.mem.base
         index   = op.value.mem.index
         scale   = op.value.mem.scale
-        sz      = ''
+        sz      = '['
 
         if segment != 0:
             sz += '%s:' % instruction.reg_name(segment)
@@ -89,6 +89,9 @@ class DisassemblyAssistant(pwndbg.disasm.arch.DisassemblyAssistant):
                 sz += ' - '
             elif arith and op.mem.disp >= 0:
                 sz += ' + '
+
+        if disp != 0:
+            sz += '%#x' % (disp if disp >= 0 else -disp)
 
         sz += ']'
         return sz
