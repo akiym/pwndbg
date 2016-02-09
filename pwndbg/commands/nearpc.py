@@ -122,6 +122,16 @@ def nearpc(pc=None, lines=None, to_string=False):
             pretty = pwndbg.chain.format(value, code=code)
             result.append('%8s%-10s %s' % ('',arg.name+':', pretty))
 
+        if i.address == pc:
+            if not any(g in i.groups for g in (CS_GRP_CALL, CS_GRP_JUMP, CS_GRP_RET)):
+                seen = {}
+                for op in i.operands:
+                    if op.type == CS_OP_IMM and len(pwndbg.chain.get(op.int)) == 1: continue
+                    if op.str in seen: continue
+                    seen[op.str] = True
+                    chain = pwndbg.chain.format(op.int)
+                    result.append('%8s%-10s: %s' % ('', op.str, chain))
+
         prev = i
 
 
