@@ -37,6 +37,32 @@ def get(address, text = None):
         text(str): Optional text to use in place of the address
               in the return value string.
     """
+    color = address_color(address)
+
+    if text is None and isinstance(address, (long, int)) and address > 255:
+        text = hex(int(address))
+    if text is None:
+        text = int(address)
+
+    colored = []
+    space = True
+    for c in list(text):
+        if color != NORMAL:
+            if c == ' ':
+                if not space:
+                    space = True
+                    colored.append(NORMAL)
+            else:
+                if space:
+                    space = False
+                    colored.append(color)
+        colored.append(c)
+    if not space:
+        colored.append(NORMAL)
+
+    return ''.join(colored)
+
+def address_color(address):
     page = pwndbg.vmmap.find(int(address))
 
     if page is None:                 color = NORMAL
@@ -49,12 +75,7 @@ def get(address, text = None):
     if page and page.rwx:
         color = color + UNDERLINE
 
-    if text is None and isinstance(address, (long, int)) and address > 255:
-        text = hex(int(address))
-    if text is None:
-        text = int(address)
-
-    return "%s%s%s" % (color, text, NORMAL)
+    return color
 
 def legend():
     return 'LEGEND: ' + ' | '.join((
