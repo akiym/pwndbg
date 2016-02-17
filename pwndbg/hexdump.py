@@ -6,6 +6,7 @@ Hexdump implementation, ~= stolen from pwntools.
 import copy
 import string
 
+import pwndbg.arch
 import pwndbg.color
 
 
@@ -84,5 +85,66 @@ def hexdump(data, address = 0, width = 16, skip = True):
         hexline.append("+%04x " % len(data))
 
     hexline.append("%#08x  " % (base + len(data)))
+
+    yield ''.join(hexline)
+
+def phexdump(data, address = 0, width = 16, skip = True):
+    data = list(bytearray(data))
+    base = address
+    last_line = None
+    skipping  = False
+    step = pwndbg.arch.ptrsize
+    for i, line in enumerate(groupby(data, width, -1)):
+        if skip and line == last_line:
+            if not skipping:
+                skipping = True
+                yield '*'
+            continue
+        else:
+            skipping  = False
+            last_line = line
+
+        hexline = []
+
+        if address:
+            hexline.append("+%04x " % (i*width))
+
+        addr = base + (i*width)
+        hexline.append(pwndbg.color.get(addr, text="%#08x  " % addr))
+
+        for group in groupby(line, step):
+            color = None
+            if -1 not in group:
+                v = pwndbg.arch.unpack(''.join([chr(c) for c in group]))
+                page = pwndbg.vmmap.find(v)
+
+            if page is None:
+                for char in group:
+                    if char == -1:
+                        hexline.append('  ')
+                    else:
+                        hexline.append('%02x' % char)
+                    hexline.append(' ')
+            else:
+                hexline.append(pwndbg.color.get(v, text='%#{}x'.format(step * 3 - 1) % v))
+                hexline.append(' ')
+            hexline.append(' ')
+
+        hexline.append('|')
+        for group in groupby(line, 4):
+            for char in group:
+                hexline.append(printable[char])
+            hexline.append('|')
+
+
+        yield(''.join(hexline))
+
+    hexline = []
+
+    if address:
+        hexline.append("+%04x " % len(data))
+
+    addr = base + (i*width)
+    hexline.append(pwndbg.color.get(addr, text="%#08x  " % addr))
 
     yield ''.join(hexline)

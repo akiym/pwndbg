@@ -62,6 +62,7 @@ __all__ = [
 'file',
 'function',
 'hexdump',
+'phexdump',
 'ida',
 'info',
 'linkmap',
