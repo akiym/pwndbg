@@ -41,7 +41,7 @@ def start(*a):
         if not address:
             continue
 
-        b = gdb.Breakpoint(symbol, temporary=True)
+        b = gdb.Breakpoint(symbol, temporary=True, internal=True)
         gdb.execute(run, from_tty=False, to_string=True)
         return
 
