@@ -46,6 +46,7 @@ import pwndbg.commands.dumpargs
 import pwndbg.commands.cpsr
 import pwndbg.commands.argv
 import pwndbg.commands.heap
+import pwndbg.commands.socat
 
 
 __all__ = [
@@ -77,7 +78,8 @@ __all__ = [
 'symbol',
 'typeinfo',
 'ui',
-'vmmap'
+'vmmap',
+'socat'
 ]
 
 prompt = "pwndbg> "

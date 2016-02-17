@@ -259,7 +259,7 @@ def map_inner(ei_class, ehdr, objfile):
 
     # Adjust against the base address that we discovered
     # for binaries that are relocatable / type DYN.
-    if ET_DYN == int(ehdr['e_type']):
+    if check_pie(ehdr):
         for page in pages:
             page.vaddr += base
 
@@ -289,3 +289,6 @@ def map_inner(ei_class, ehdr, objfile):
         page.objfile = objfile
 
     return tuple(sorted(pages))
+
+def check_pie(ehdr):
+    return ET_DYN == int(ehdr['e_type'])
